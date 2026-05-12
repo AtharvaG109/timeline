@@ -1,0 +1,11 @@
+Example after running `make demo`:
+
+```text
+timestamp_ns          category     action                  severity  event_id  source_path
+1715025704000000000  auth         successful_logon        high      ...       demo-output/artifacts/incident/Security.evtx
+1715025852000000000  process      process_created         high      ...       demo-output/artifacts/incident/Security.evtx
+1715025980000000000  browser      downloaded              medium    ...       demo-output/artifacts/incident/Chrome/Default/History
+1715025990000000000  persistence  scheduled_task_created  high      ...       demo-output/artifacts/incident/Security.evtx
+```
+
+Event IDs are deterministic for the generated artifact paths, so exact hashes depend on the checkout location and selected `DEMO_DIR`.

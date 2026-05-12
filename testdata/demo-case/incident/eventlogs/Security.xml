@@ -1,0 +1,100 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4625</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:00:10Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2001</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="TargetUserName">analyst</Data>
+      <Data Name="IpAddress">203.0.113.55</Data>
+      <Data Name="IpPort">49152</Data>
+      <Data Name="TargetLogonId">0x0</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4625</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:00:38Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2002</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="TargetUserName">analyst</Data>
+      <Data Name="IpAddress">203.0.113.55</Data>
+      <Data Name="IpPort">49153</Data>
+      <Data Name="TargetLogonId">0x0</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4625</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:01:05Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2003</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="TargetUserName">analyst</Data>
+      <Data Name="IpAddress">203.0.113.55</Data>
+      <Data Name="IpPort">49154</Data>
+      <Data Name="TargetLogonId">0x0</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4624</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:01:44Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2004</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="TargetUserName">analyst</Data>
+      <Data Name="IpAddress">203.0.113.55</Data>
+      <Data Name="IpPort">49155</Data>
+      <Data Name="TargetLogonId">0x3e7</Data>
+      <Data Name="LogonType">10</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4688</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:04:12Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2005</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="SubjectUserName">DEMO\analyst</Data>
+      <Data Name="NewProcessName">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="CommandLine">powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand SQBFAFgA</Data>
+      <Data Name="NewProcessId">0x2400</Data>
+      <Data Name="ParentProcessId">0x3e7</Data>
+      <Data Name="TargetLogonId">0x3e7</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4698</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:06:30Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>2006</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="SubjectUserName">DEMO\analyst</Data>
+      <Data Name="TaskName">\Microsoft\Windows\Demo\CacheTask</Data>
+      <Data Name="TaskContent">C:\Users\Public\demo-payload.exe</Data>
+    </EventData>
+  </Event>
+</Events>

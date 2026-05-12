@@ -1,0 +1,79 @@
+group: execution
+rules:
+  - id: execution.downloads_executable
+    name: Executable from Downloads
+    description: Process execution from a Downloads path is a candidate user-downloaded executable.
+    severity: medium
+    confidence: medium
+    evidence_strength: moderate
+    tags: [execution, downloads]
+    mitre_techniques: [T1204.002]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: process
+        - field: object.path
+          op: regex_ci
+          value: '\\downloads\\.*\.(exe|dll|scr|bat|cmd|ps1)$'
+  - id: execution.temp_executable
+    name: Executable from Temp
+    description: Process execution from a Temp path is a candidate unusual execution location.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [execution, temp]
+    mitre_techniques: [T1204.002]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: process
+        - field: object.path
+          op: regex_ci
+          value: '\\temp\\.*\.(exe|dll|scr|bat|cmd|ps1)$'
+  - id: execution.public_executable
+    name: Executable from Public
+    description: Process execution from Public is a candidate shared-path execution event.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [execution, public]
+    mitre_techniques: [T1204.002]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: process
+        - field: object.path
+          op: regex_ci
+          value: '\\users\\public\\.*\.(exe|dll|scr|bat|cmd|ps1)$'
+  - id: execution.suspicious_lolbin
+    name: Suspicious LOLBin execution
+    description: Process image is a commonly abused Windows binary and requires command-line validation.
+    severity: medium
+    confidence: medium
+    evidence_strength: moderate
+    tags: [execution, lolbin]
+    mitre_techniques: [T1218]
+    match:
+      all:
+        - field: actor.image
+          op: regex_ci
+          value: '\\(certutil|rundll32|regsvr32|mshta|wmic)\.exe$'
+  - id: execution.suspicious_parent_child
+    name: Suspicious parent-child process pattern
+    description: Command line indicates a candidate script or shell child spawned by an Office or browser process.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [execution, parent-child]
+    mitre_techniques: [T1204.002]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: process
+        - field: actor.cmdline
+          op: regex_ci
+          value: '(winword|excel|outlook|chrome|msedge|firefox).*(powershell|cmd|wscript|cscript|mshta)'

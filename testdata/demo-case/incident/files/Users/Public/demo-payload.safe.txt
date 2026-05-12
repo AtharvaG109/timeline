@@ -1,0 +1,3 @@
+This is a safe synthetic text fixture.
+The demo generator writes it under an .exe name to exercise path-based timeline behavior.
+It is not executable content.

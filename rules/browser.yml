@@ -1,0 +1,34 @@
+group: browser
+rules:
+  - id: browser.executable_download
+    name: Executable downloaded
+    description: Browser download of an executable is a candidate precursor to execution.
+    severity: medium
+    confidence: medium
+    evidence_strength: moderate
+    tags: [browser, download, executable]
+    mitre_techniques: [T1105, T1204.002]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: browser
+        - field: object.path
+          op: regex_ci
+          value: '\.(exe|dll|scr|bat|cmd|ps1)$'
+  - id: browser.archive_download
+    name: Archive downloaded
+    description: Browser download of an archive is a candidate staged payload transfer.
+    severity: low
+    confidence: medium
+    evidence_strength: moderate
+    tags: [browser, download, archive]
+    mitre_techniques: [T1105]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: browser
+        - field: object.path
+          op: regex_ci
+          value: '\.(zip|7z|rar|iso|tar|gz)$'

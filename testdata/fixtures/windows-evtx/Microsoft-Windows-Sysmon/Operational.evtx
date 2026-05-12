@@ -1,0 +1,37 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon"/>
+      <EventID>1</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:04:13Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>301</EventRecordID>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+    </System>
+    <EventData>
+      <Data Name="User">ACME\alice</Data>
+      <Data Name="Image">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="CommandLine">powershell.exe -NoProfile -ExecutionPolicy Bypass</Data>
+      <Data Name="ProcessId">4640</Data>
+      <Data Name="ParentProcessId">2052</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon"/>
+      <EventID>3</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:09:55Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>302</EventRecordID>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+    </System>
+    <EventData>
+      <Data Name="User">ACME\alice</Data>
+      <Data Name="Image">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="DestinationIp">198.51.100.42</Data>
+      <Data Name="DestinationPort">443</Data>
+      <Data Name="SourceIp">10.0.0.15</Data>
+      <Data Name="SourcePort">49701</Data>
+    </EventData>
+  </Event>
+</Events>

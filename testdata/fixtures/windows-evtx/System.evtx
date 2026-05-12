@@ -1,0 +1,17 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Service Control Manager"/>
+      <EventID>7045</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:07:39Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>201</EventRecordID>
+      <Channel>System</Channel>
+    </System>
+    <EventData>
+      <Data Name="ServiceName">UpdateCheck</Data>
+      <Data Name="ImagePath">C:\Users\alice\AppData\Roaming\updatecheck.exe</Data>
+      <Data Name="SubjectUserName">alice</Data>
+    </EventData>
+  </Event>
+</Events>

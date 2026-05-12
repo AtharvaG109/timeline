@@ -1,0 +1,38 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon"/>
+      <EventID>11</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:05:20Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>3001</EventRecordID>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+    </System>
+    <EventData>
+      <Data Name="Image">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="TargetFilename">C:\Users\Public\demo-payload.exe</Data>
+      <Data Name="ProcessGuid">{11111111-2222-3333-4444-555555555555}</Data>
+      <Data Name="ProcessId">9216</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Sysmon"/>
+      <EventID>3</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:09:55Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>3002</EventRecordID>
+      <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+    </System>
+    <EventData>
+      <Data Name="Image">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="SourceIp">10.0.0.23</Data>
+      <Data Name="SourcePort">50213</Data>
+      <Data Name="DestinationIp">198.51.100.42</Data>
+      <Data Name="DestinationPort">443</Data>
+      <Data Name="DestinationHostname">demo-c2.example.test</Data>
+      <Data Name="ProcessGuid">{11111111-2222-3333-4444-555555555555}</Data>
+      <Data Name="ProcessId">9216</Data>
+    </EventData>
+  </Event>
+</Events>

@@ -1,0 +1,79 @@
+group: persistence
+rules:
+  - id: persistence.scheduled_task_created
+    name: Scheduled task created
+    description: Scheduled task creation is a candidate persistence event and requires task action validation.
+    severity: high
+    confidence: high
+    evidence_strength: strong
+    tags: [persistence, scheduled-task]
+    mitre_techniques: [T1053.005]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: persistence
+        - field: action
+          op: equals
+          value: scheduled_task_created
+  - id: persistence.scheduled_task_xml_created
+    name: Scheduled task XML created
+    description: Scheduled Task XML metadata is consistent with a candidate persistence configuration and requires validation.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [persistence, scheduled-task]
+    mitre_techniques: [T1053.005]
+    match:
+      all:
+        - field: timestamp_source
+          op: equals
+          value: scheduled_task_xml
+        - field: category
+          op: equals
+          value: persistence
+        - field: action
+          op: in
+          in: [created, configured]
+  - id: persistence.service_installed
+    name: Service installed
+    description: Service installation is a candidate persistence event and requires service binary validation.
+    severity: high
+    confidence: high
+    evidence_strength: strong
+    tags: [persistence, service]
+    mitre_techniques: [T1543.003]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: persistence
+        - field: action
+          op: equals
+          value: service_installed
+  - id: persistence.startup_folder_write
+    name: Startup folder write
+    description: File creation under a Startup folder is a candidate persistence event.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [persistence, startup-folder]
+    mitre_techniques: [T1547.001]
+    match:
+      all:
+        - field: object.path
+          op: contains_ci
+          value: \startup\
+  - id: persistence.run_key_modified
+    name: Run key modified
+    description: Registry Run key modification is a candidate autorun persistence event.
+    severity: high
+    confidence: high
+    evidence_strength: strong
+    tags: [persistence, run-key]
+    mitre_techniques: [T1547.001]
+    match:
+      all:
+        - field: object.path
+          op: regex_ci
+          value: '\\currentversion\\run(once)?\\'

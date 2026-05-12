@@ -1,0 +1,5 @@
+ExecutableName: POWERSHELL.EXE
+RunCount: 7
+LastRun: 2024-05-06T20:04:13Z
+ReferencedFile: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+ReferencedFile: C:\Users\alice\AppData\Local\Temp\payload.ps1

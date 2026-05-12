@@ -1,0 +1,54 @@
+group: network
+rules:
+  - id: network.outbound_destination
+    name: Outbound network destination
+    description: Outbound network destination is recorded for baseline comparison in later phases.
+    severity: medium
+    confidence: medium
+    evidence_strength: strong
+    tags: [network, outbound]
+    mitre_techniques: [T1071]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: network
+        - field: action
+          op: equals
+          value: network_connection
+        - field: network.dst_ip
+          op: exists
+  - id: network.powershell_outbound
+    name: PowerShell outbound connection
+    description: PowerShell process with outbound connection is a candidate network transfer event.
+    severity: high
+    confidence: medium
+    evidence_strength: strong
+    tags: [network, powershell]
+    mitre_techniques: [T1059.001, T1105]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: network
+        - field: actor.image
+          op: contains_ci
+          value: powershell
+        - field: network.dst_ip
+          op: exists
+  - id: network.dns_by_suspicious_process
+    name: DNS query by suspicious process
+    description: DNS query from a suspicious process family is a candidate command-and-control precursor.
+    severity: medium
+    confidence: medium
+    evidence_strength: moderate
+    tags: [network, dns]
+    mitre_techniques: [T1071.004]
+    match:
+      all:
+        - field: action
+          op: equals
+          value: dns_query
+        - field: actor.image
+          op: regex_ci
+          value: '\\(powershell|cmd|wscript|cscript|mshta|rundll32)\.exe$'

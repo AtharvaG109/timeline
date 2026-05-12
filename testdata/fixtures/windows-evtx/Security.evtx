@@ -1,0 +1,65 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4624</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:01:44.123456789Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>101</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="TargetUserName">alice</Data>
+      <Data Name="IpAddress">203.0.113.24</Data>
+      <Data Name="IpPort">49152</Data>
+      <Data Name="TargetLogonId">0x3e7</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4688</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:04:12Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>102</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="SubjectUserName">alice</Data>
+      <Data Name="NewProcessName">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="CommandLine">powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand SQBFAFgA</Data>
+      <Data Name="NewProcessId">0x1220</Data>
+      <Data Name="ParentProcessId">0x804</Data>
+      <Data Name="SubjectLogonId">0x3e7</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>9999</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:05:00Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>103</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="Message">unsupported event used to verify skip accounting</Data>
+    </EventData>
+  </Event>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4698</EventID>
+      <TimeCreated SystemTime="2024-05-06T20:06:30Z"/>
+      <Computer>WIN-WS01</Computer>
+      <EventRecordID>104</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="SubjectUserName">alice</Data>
+      <Data Name="TaskName">\UpdateCheck</Data>
+      <Data Name="TaskContent">C:\Users\alice\AppData\Roaming\updatecheck.exe</Data>
+      <Data Name="SubjectLogonId">0x3e7</Data>
+    </EventData>
+  </Event>
+</Events>

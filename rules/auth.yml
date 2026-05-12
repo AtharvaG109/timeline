@@ -1,0 +1,74 @@
+group: auth
+rules:
+  - id: auth.multiple_failed_logons_then_success
+    name: Multiple failed logons followed by success
+    description: Three or more failed logons followed by a successful logon for the same user or source address is consistent with a candidate authentication attack pattern.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [auth, failed-then-success]
+    mitre_techniques: [T1110]
+    aggregate: failed_logons_then_success
+  - id: auth.failed_logon
+    name: Failed logon
+    description: Failed logon is tracked for possible authentication pattern correlation.
+    severity: low
+    confidence: high
+    evidence_strength: strong
+    tags: [auth, failed-logon]
+    mitre_techniques: [T1110]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: auth
+        - field: action
+          op: equals
+          value: failed_logon
+  - id: auth.successful_remote_logon
+    name: Successful remote logon
+    description: Successful logon with a source network address is a candidate remote access event.
+    severity: high
+    confidence: medium
+    evidence_strength: strong
+    tags: [auth, remote-logon]
+    mitre_techniques: [T1021]
+    match:
+      all:
+        - field: category
+          op: equals
+          value: auth
+        - field: action
+          op: equals
+          value: successful_logon
+        - field: network.src_ip
+          op: exists
+  - id: auth.explicit_credentials
+    name: Explicit credentials used
+    description: Explicit credential use is a candidate lateral movement or administrative access event.
+    severity: medium
+    confidence: high
+    evidence_strength: strong
+    tags: [auth, explicit-credentials]
+    mitre_techniques: [T1078]
+    match:
+      all:
+        - field: action
+          op: equals
+          value: explicit_credentials_used
+  - id: auth.privileged_group_change
+    name: Privileged group membership change
+    description: Group membership change can indicate candidate privilege expansion.
+    severity: high
+    confidence: high
+    evidence_strength: strong
+    tags: [auth, group-change]
+    mitre_techniques: [T1098]
+    match:
+      any:
+        - field: action
+          op: equals
+          value: privileged_group_member_added
+        - field: action
+          op: equals
+          value: local_group_member_added

@@ -1,0 +1,19 @@
+<Events>
+  <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+    <System>
+      <Provider Name="Microsoft-Windows-Security-Auditing"/>
+      <EventID>4688</EventID>
+      <TimeCreated SystemTime="2024-05-06T19:50:00Z"/>
+      <Computer>DEMO-WS01</Computer>
+      <EventRecordID>1001</EventRecordID>
+      <Channel>Security</Channel>
+    </System>
+    <EventData>
+      <Data Name="SubjectUserName">DEMO\analyst</Data>
+      <Data Name="NewProcessName">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</Data>
+      <Data Name="CommandLine">powershell.exe -NoProfile Get-Date</Data>
+      <Data Name="NewProcessId">0x1500</Data>
+      <Data Name="ParentProcessId">0x900</Data>
+    </EventData>
+  </Event>
+</Events>

@@ -1,0 +1,96 @@
+group: powershell
+rules:
+  - id: powershell.encoded_command
+    name: Encoded PowerShell command
+    description: PowerShell command line contains encoded command flags and is a candidate for obfuscated script execution.
+    severity: high
+    confidence: high
+    evidence_strength: strong
+    tags: [powershell, encoded-command]
+    mitre_techniques: [T1059.001, T1027]
+    match:
+      all:
+        - field: actor.cmdline
+          op: regex_ci
+          value: '(^|\s)(-|/)e(nc|nco|ncodedcommand)?(\s|:)'
+        - field: actor.image
+          op: contains_ci
+          value: powershell
+  - id: powershell.download_cradle
+    name: PowerShell download cradle
+    description: PowerShell content references download behavior that is consistent with staged retrieval and requires validation.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [powershell, download]
+    mitre_techniques: [T1059.001, T1105]
+    match:
+      all:
+        - field: actor.cmdline
+          op: regex_ci
+          value: '(downloadstring|downloadfile|invoke-webrequest|iwr|webclient)'
+  - id: powershell.invoke_webrequest
+    name: Invoke-WebRequest or iwr usage
+    description: PowerShell content uses Invoke-WebRequest or iwr and is a candidate transfer event.
+    severity: medium
+    confidence: high
+    evidence_strength: strong
+    tags: [powershell, web-request]
+    mitre_techniques: [T1105]
+    match:
+      all:
+        - field: actor.cmdline
+          op: regex_ci
+          value: '(^|\W)(invoke-webrequest|iwr)(\W|$)'
+  - id: powershell.from_base64_string
+    name: PowerShell FromBase64String usage
+    description: PowerShell content references FromBase64String and may indicate encoded payload handling.
+    severity: high
+    confidence: medium
+    evidence_strength: moderate
+    tags: [powershell, base64]
+    mitre_techniques: [T1027, T1059.001]
+    match:
+      all:
+        - field: actor.cmdline
+          op: contains_ci
+          value: FromBase64String
+  - id: powershell.execution_policy_bypass
+    name: PowerShell execution policy bypass
+    description: PowerShell command line requests execution policy bypass.
+    severity: medium
+    confidence: high
+    evidence_strength: strong
+    tags: [powershell, execution-policy]
+    mitre_techniques: [T1059.001]
+    match:
+      all:
+        - field: actor.cmdline
+          op: contains_ci
+          value: executionpolicy bypass
+  - id: powershell.hidden_window
+    name: Hidden PowerShell window
+    description: PowerShell command line requests a hidden window.
+    severity: medium
+    confidence: high
+    evidence_strength: strong
+    tags: [powershell, hidden-window]
+    mitre_techniques: [T1059.001]
+    match:
+      all:
+        - field: actor.cmdline
+          op: contains_ci
+          value: windowstyle hidden
+  - id: powershell.non_interactive
+    name: Non-interactive PowerShell
+    description: PowerShell command line requests non-interactive execution.
+    severity: medium
+    confidence: high
+    evidence_strength: strong
+    tags: [powershell, non-interactive]
+    mitre_techniques: [T1059.001]
+    match:
+      all:
+        - field: actor.cmdline
+          op: contains_ci
+          value: noninteractive

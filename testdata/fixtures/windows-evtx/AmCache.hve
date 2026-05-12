@@ -1,0 +1,15 @@
+[Entry]
+Path: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+SHA1: 0123456789abcdef0123456789abcdef01234567
+Publisher: Microsoft Corporation
+Product: Windows PowerShell
+Timestamp: 2024-05-06T20:04:10Z
+Executed: true
+
+[Entry]
+Path: C:\Users\alice\AppData\Roaming\updatecheck.exe
+SHA1: fedcba9876543210fedcba9876543210fedcba98
+Publisher: Example Publisher
+Product: Update Check
+Timestamp: 2024-05-06T20:07:30Z
+Executed: false

@@ -1,0 +1,18 @@
+{
+  "visits": [
+    {
+      "url": "https://portal.example.test/research",
+      "title": "Demo research portal",
+      "visit_time": "2024-05-06T19:58:00Z",
+      "visit_count": 1
+    }
+  ],
+  "downloads": [
+    {
+      "url": "https://downloads.example.test/demo-payload.exe",
+      "target_path": "C:\\Users\\Public\\demo-payload.exe",
+      "start_time": "2024-05-06T20:03:30Z",
+      "end_time": "2024-05-06T20:03:35Z"
+    }
+  ]
+}

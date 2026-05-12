@@ -1,0 +1,25 @@
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>2024-05-06T20:06:15Z</Date>
+    <Author>DEMO\analyst</Author>
+    <URI>\Microsoft\Windows\Demo\CacheTask</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <StartBoundary>2024-05-06T20:07:00Z</StartBoundary>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>DEMO\analyst</UserId>
+    </Principal>
+  </Principals>
+  <Actions Context="Author">
+    <Exec>
+      <Command>C:\Users\Public\demo-payload.exe</Command>
+      <Arguments>--demo-safe</Arguments>
+      <WorkingDirectory>C:\Users\Public</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>
