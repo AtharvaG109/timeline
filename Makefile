@@ -11,7 +11,7 @@ COMMIT ?= local
 DATE ?= local
 LDFLAGS ?= -X timeline/internal/version.Version=$(VERSION) -X timeline/internal/version.Commit=$(COMMIT) -X timeline/internal/version.Date=$(DATE)
 
-.PHONY: lint test test-race bench build demo release-snapshot clean
+.PHONY: lint test test-race bench security build demo release-snapshot clean
 
 lint:
 	test -n "$(GO)"
@@ -29,7 +29,13 @@ test-race:
 
 bench:
 	test -n "$(GO)"
-	$(GOENV) $(GO) test ./cmd/timeline -run '^$$' -bench 'Benchmark(IngestWindowsFixture|QueryFixture)$$' -benchmem
+	$(GOENV) $(GO) test ./cmd/timeline -run '^$$' -bench 'Benchmark(IngestWindowsFixture|QueryFixture|SyntheticLargeCase)$$' -benchmem
+
+security:
+	test -n "$(GO)"
+	$(GOENV) $(GO) run honnef.co/go/tools/cmd/staticcheck@v0.7.0 ./...
+	$(GOENV) $(GO) run github.com/securego/gosec/v2/cmd/gosec@v2.26.1 $$($(GOENV) $(GO) list -f '{{.Dir}}' ./...)
+	$(GOENV) $(GO) run golang.org/x/vuln/cmd/govulncheck@v1.3.0 ./...
 
 build:
 	test -n "$(GO)"

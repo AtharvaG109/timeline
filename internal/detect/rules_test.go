@@ -131,6 +131,31 @@ func TestGoldenDetectionOutput(t *testing.T) {
 	}
 }
 
+func TestFalsePositiveAvoidanceForBenignPowerShell(t *testing.T) {
+	event := detectionTestEvent()
+	event.Actor.Cmdline = `powershell.exe -NoProfile -File C:\Program Files\Vendor\maintenance.ps1`
+	event.Object.Path = `C:\Program Files\Vendor\maintenance.ps1`
+	event.ID = domain.GenerateEventID(event)
+	rules := RuleSet{Rules: []Rule{{
+		ID:               "powershell.encoded_command",
+		Name:             "Encoded PowerShell command",
+		Severity:         domain.SeverityHigh,
+		Confidence:       domain.ConfidenceHigh,
+		EvidenceStrength: domain.EvidenceStrong,
+		Match: MatchBlock{All: []Condition{
+			{Field: "actor.cmdline", Op: "contains_ci", Value: "encodedcommand"},
+		}},
+	}}}
+
+	result := Apply(rules, []domain.TimelineEvent{event})
+	if len(result.Detections) != 0 {
+		t.Fatalf("benign PowerShell maintenance command produced detections: %+v", result.Detections)
+	}
+	if result.Events[0].Severity != event.Severity || result.Events[0].Confidence != event.Confidence {
+		t.Fatalf("benign PowerShell event was upgraded: before=%s/%s after=%s/%s", event.Severity, event.Confidence, result.Events[0].Severity, result.Events[0].Confidence)
+	}
+}
+
 func detectionTestEvent() domain.TimelineEvent {
 	event := domain.TimelineEvent{
 		SchemaVersion:      "1",

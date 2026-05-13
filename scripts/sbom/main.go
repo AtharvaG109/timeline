@@ -23,12 +23,12 @@ type sbom struct {
 }
 
 func main() {
-	modules, err := readModules("go.mod")
+	modules, err := readModules()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "generate sbom: %v\n", err)
 		os.Exit(1)
 	}
-	sums, modSums, err := readSums("go.sum")
+	sums, modSums, err := readSums()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "generate sbom: %v\n", err)
 		os.Exit(1)
@@ -52,8 +52,8 @@ func main() {
 	}
 }
 
-func readModules(path string) ([]moduleEntry, error) {
-	file, err := os.Open(path)
+func readModules() ([]moduleEntry, error) {
+	file, err := os.Open("go.mod")
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +96,8 @@ func readModules(path string) ([]moduleEntry, error) {
 	return modules, nil
 }
 
-func readSums(path string) (map[string]string, map[string]string, error) {
-	file, err := os.Open(path)
+func readSums() (map[string]string, map[string]string, error) {
+	file, err := os.Open("go.sum")
 	if err != nil {
 		return nil, nil, err
 	}

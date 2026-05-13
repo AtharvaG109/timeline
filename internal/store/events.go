@@ -363,6 +363,7 @@ func QueryEvents(ctx context.Context, db *sql.DB, filters QueryFilters) ([]domai
 		args = append(args, strings.TrimSpace(filters.DstIP))
 	}
 	if len(clauses) > 0 {
+		// #nosec G202 -- clauses are fixed literals selected from QueryFilters and values are bound as parameters.
 		query += ` WHERE ` + strings.Join(clauses, ` AND `)
 	}
 	query += ` ORDER BY timestamp_ns ASC, id ASC`

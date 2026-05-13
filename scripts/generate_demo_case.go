@@ -62,7 +62,7 @@ func generate(sourceDir string, outDir string) error {
 }
 
 func materializeCase(sourceRoot string, outRoot string) error {
-	if err := os.MkdirAll(outRoot, 0o755); err != nil {
+	if err := os.MkdirAll(outRoot, 0o750); err != nil {
 		return fmt.Errorf("create case output directory: %w", err)
 	}
 	if err := copyEventXML(filepath.Join(sourceRoot, "eventlogs"), outRoot); err != nil {
@@ -151,13 +151,21 @@ func copySafeFiles(sourceRoot string, outRoot string) error {
 }
 
 func copyFile(source string, target string) error {
+	if err := rejectUnsafePath(source); err != nil {
+		return err
+	}
+	if err := rejectUnsafePath(target); err != nil {
+		return err
+	}
+	// #nosec G304 -- demo generation only reads sanitized fixture paths after traversal checks.
 	content, err := os.ReadFile(source)
 	if err != nil {
 		return fmt.Errorf("read %s: %w", source, err)
 	}
-	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(target), 0o750); err != nil {
 		return fmt.Errorf("create target directory: %w", err)
 	}
+	// #nosec G703 -- target path is traversal-checked and scoped by the demo output directory.
 	if err := os.WriteFile(target, content, 0o600); err != nil {
 		return fmt.Errorf("write %s: %w", target, err)
 	}
@@ -165,6 +173,13 @@ func copyFile(source string, target string) error {
 }
 
 func createBrowserHistory(source string, target string) error {
+	if err := rejectUnsafePath(source); err != nil {
+		return err
+	}
+	if err := rejectUnsafePath(target); err != nil {
+		return err
+	}
+	// #nosec G304 -- demo generation only reads sanitized fixture paths after traversal checks.
 	content, err := os.ReadFile(source)
 	if err != nil {
 		return fmt.Errorf("read browser fixture: %w", err)
@@ -173,7 +188,7 @@ func createBrowserHistory(source string, target string) error {
 	if err := json.Unmarshal(content, &fixture); err != nil {
 		return fmt.Errorf("parse browser fixture: %w", err)
 	}
-	if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(target), 0o750); err != nil {
 		return fmt.Errorf("create browser history directory: %w", err)
 	}
 	db, err := sql.Open("sqlite", target)
@@ -221,6 +236,14 @@ func createBrowserHistory(source string, target string) error {
 		if _, err := db.Exec(`INSERT INTO downloads_url_chains (id, chain_index, url) VALUES (?, 0, ?)`, id, download.URL); err != nil {
 			return fmt.Errorf("insert browser download URL: %w", err)
 		}
+	}
+	return nil
+}
+
+func rejectUnsafePath(path string) error {
+	clean := filepath.Clean(path)
+	if strings.Contains(clean, ".."+string(os.PathSeparator)) || clean == ".." {
+		return fmt.Errorf("unsafe demo path: %s", path)
 	}
 	return nil
 }

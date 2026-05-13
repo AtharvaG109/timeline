@@ -1,6 +1,6 @@
 # Performance
 
-This page records measured local performance for the current v0.1.0 technical-preview workflow. The numbers are not production scale claims.
+This page records measured local performance for the current v0.1.0 technical-preview workflow. The numbers are local gate results, not broad production scale claims.
 
 ## Environment
 
@@ -21,28 +21,35 @@ make bench
 Result:
 
 ```text
-BenchmarkIngestWindowsFixture-12    38     31304981 ns/op    1892253 B/op    22305 allocs/op
-BenchmarkQueryFixture-12            481     2202464 ns/op     111285 B/op     2049 allocs/op
+BenchmarkIngestWindowsFixture-12      36    28260895 ns/op     1891610 B/op      22305 allocs/op
+BenchmarkSyntheticLargeCase-12         1  1049817039 ns/op   137052520 B/op    4401216 allocs/op
+BenchmarkQueryFixture-12             570     2068061 ns/op      110499 B/op       2042 allocs/op
 ```
 
-## Required Before Controlled Production Use
+## Coverage
 
-The following are still required:
+The current benchmark gate covers:
 
-- ingest 100k synthetic events;
-- ingest 1M synthetic events if practical;
-- query high-severity events on large datasets;
-- query by category on large datasets;
-- JSONL export on large datasets;
-- diff fingerprint generation on large datasets;
-- Markdown report generation on larger incident databases;
-- peak-memory measurement where practical;
-- SQLite database size measurement.
+- fixture ingest with EVTX-derived records, browser history, scheduled tasks, filesystem metadata, detections, and correlations;
+- fixture query by category;
+- high-severity process query over a synthetic 100k-event SQLite case.
 
-Use:
+The integration test suite also exercises a 10k baseline plus 10k incident synthetic corpus through query, JSONL export, diff, and report generation.
+
+## Still Required Before Controlled Production Use
+
+The following scale gates still need broader coverage:
+
+- 1M synthetic event ingest without memory exhaustion;
+- JSONL export benchmark on 100k and larger event sets;
+- diff fingerprint benchmark on 100k and larger baseline/incident databases;
+- Markdown report benchmark on larger incident databases;
+- peak-memory measurement outside Go allocation counters;
+- SQLite database size measurement across artifact mixes;
+- repeated benchmark runs on Linux and Windows hosts.
+
+Use this command for the current local gate:
 
 ```sh
 make bench
 ```
-
-The current `make bench` target covers the fixture ingest and query smoke benchmarks. It is a baseline, not a scale gate.

@@ -56,6 +56,30 @@ jobs:
       - name: Build
         run: make build
 
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Benchmarks
+        run: make bench
+
+  release-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Release snapshot
+        run: make release-snapshot
+
   demo:
     runs-on: ubuntu-latest
     steps:

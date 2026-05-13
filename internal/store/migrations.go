@@ -152,7 +152,9 @@ func Open(ctx context.Context, path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("open SQLite database: %w", err)
 	}
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("connect SQLite database: %w; close database: %v", err, closeErr)
+		}
 		return nil, fmt.Errorf("connect SQLite database: %w", err)
 	}
 	return db, nil
@@ -168,7 +170,9 @@ func OpenReadOnly(ctx context.Context, path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("open SQLite database read-only: %w", err)
 	}
 	if err := db.PingContext(ctx); err != nil {
-		db.Close()
+		if closeErr := db.Close(); closeErr != nil {
+			return nil, fmt.Errorf("connect SQLite database read-only: %w; close database: %v", err, closeErr)
+		}
 		return nil, fmt.Errorf("connect SQLite database read-only: %w", err)
 	}
 	return db, nil

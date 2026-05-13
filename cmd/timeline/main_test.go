@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -650,6 +651,7 @@ func TestProductionReadinessDocsExist(t *testing.T) {
 		"docs/limitations.md",
 		"docs/performance.md",
 		"docs/production-readiness.md",
+		"docs/production-readiness-review.md",
 		"docs/compatibility.md",
 		"docs/adr/0001-windows-first.md",
 		"docs/adr/0002-sqlite-case-store.md",
@@ -742,6 +744,51 @@ func TestRepositoryContainsNoHighRiskSecretMarkers(t *testing.T) {
 	}
 }
 
+func TestSyntheticLargeCorpusQueryExportAndDiff(t *testing.T) {
+	dir := t.TempDir()
+	baselinePath := filepath.Join(dir, "baseline.db")
+	incidentPath := filepath.Join(dir, "incident.db")
+	exportPath := filepath.Join(dir, "events.jsonl")
+	reportPath := filepath.Join(dir, "report.md")
+
+	createSyntheticCorpusDB(t, baselinePath, "baseline", 10_000, false)
+	createSyntheticCorpusDB(t, incidentPath, "incident", 10_000, true)
+
+	service := app.New(slog.New(slog.NewTextHandler(ioDiscard{}, nil)))
+	service.SetOutput(ioDiscard{})
+	ctx := context.Background()
+	if err := service.Query(ctx, app.QueryOptions{
+		CaseDB:  incidentPath,
+		Filters: []string{"category=process", "severity=high", "limit=25"},
+	}); err != nil {
+		t.Fatalf("large corpus query failed: %v", err)
+	}
+	if err := service.Export(ctx, app.ExportOptions{
+		CaseDB:  incidentPath,
+		Format:  "jsonl",
+		OutPath: exportPath,
+	}); err != nil {
+		t.Fatalf("large corpus export failed: %v", err)
+	}
+	if info, err := os.Stat(exportPath); err != nil || info.Size() == 0 {
+		t.Fatalf("large corpus export missing or empty: info=%v err=%v", info, err)
+	}
+	if err := service.Diff(ctx, app.DiffOptions{
+		BaselineDB: baselinePath,
+		IncidentDB: incidentPath,
+		OutPath:    reportPath,
+	}); err != nil {
+		t.Fatalf("large corpus diff failed: %v", err)
+	}
+	report, err := os.ReadFile(reportPath)
+	if err != nil {
+		t.Fatalf("read large corpus report: %v", err)
+	}
+	if !strings.Contains(string(report), "encoded PowerShell command line candidate") && !strings.Contains(string(report), "new_process") {
+		t.Fatalf("large corpus report missing suspicious incident signal:\n%s", string(report))
+	}
+}
+
 func BenchmarkIngestWindowsFixture(b *testing.B) {
 	repoRoot := filepath.Clean(filepath.Join("..", ".."))
 	artifactDir := filepath.Join(repoRoot, "testdata", "fixtures", "windows-evtx")
@@ -762,6 +809,23 @@ func BenchmarkIngestWindowsFixture(b *testing.B) {
 	}
 }
 
+func BenchmarkSyntheticLargeCase(b *testing.B) {
+	dbPath := filepath.Join(b.TempDir(), "synthetic-100k.db")
+	createSyntheticCorpusDB(b, dbPath, "synthetic", 100_000, true)
+	service := app.New(slog.New(slog.NewTextHandler(ioDiscard{}, nil)))
+	service.SetOutput(nil)
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if err := service.Query(context.Background(), app.QueryOptions{
+			CaseDB:  dbPath,
+			Filters: []string{"category=process", "severity=high", "limit=100"},
+		}); err != nil {
+			b.Fatalf("query synthetic corpus: %v", err)
+		}
+	}
+}
+
 func BenchmarkQueryFixture(b *testing.B) {
 	dbPath, _, service := ingestFixtureDBForBenchmark(b)
 	service.SetOutput(nil)
@@ -774,6 +838,132 @@ func BenchmarkQueryFixture(b *testing.B) {
 			b.Fatalf("query fixture: %v", err)
 		}
 	}
+}
+
+func createSyntheticCorpusDB(tb testing.TB, dbPath string, caseID string, count int, includeIncidentSignals bool) {
+	tb.Helper()
+	ctx := context.Background()
+	db, err := store.Open(ctx, dbPath)
+	if err != nil {
+		tb.Fatalf("open synthetic corpus db: %v", err)
+	}
+	defer db.Close()
+	if err := store.ApplyMigrations(ctx, db); err != nil {
+		tb.Fatalf("apply synthetic migrations: %v", err)
+	}
+	if err := store.EnsureCase(ctx, db, store.Case{ID: caseID, Name: caseID, OS: "windows"}); err != nil {
+		tb.Fatalf("ensure synthetic case: %v", err)
+	}
+
+	events := make([]domain.TimelineEvent, 0, count+2)
+	for i := 0; i < count; i++ {
+		events = append(events, syntheticEvent(caseID, i, false))
+	}
+	if includeIncidentSignals {
+		events = append(events,
+			syntheticPowerShellEvent(caseID, count+1),
+			syntheticScheduledTaskEvent(caseID, count+2),
+		)
+	}
+	if err := store.InsertEvents(ctx, db, events); err != nil {
+		tb.Fatalf("insert synthetic events: %v", err)
+	}
+}
+
+func syntheticEvent(caseID string, index int, high bool) domain.TimelineEvent {
+	category := "process"
+	action := "process_created"
+	image := "C:/Windows/System32/notepad.exe"
+	cmdline := "notepad.exe"
+	objectType := "process"
+	objectPath := image
+	severity := domain.SeverityLow
+	if high {
+		severity = domain.SeverityHigh
+	}
+	switch index % 5 {
+	case 1:
+		category = "auth"
+		action = "successful_logon"
+		image = ""
+		cmdline = ""
+		objectType = "account"
+		objectPath = fmt.Sprintf("ACME/user-%05d", index%200)
+	case 2:
+		category = "network"
+		action = "connected"
+		image = "C:/Program Files/Trusted/app.exe"
+		cmdline = "trusted.exe --sync"
+		objectType = "process"
+		objectPath = image
+	case 3:
+		category = "filesystem"
+		action = "file_written"
+		image = "C:/Program Files/Trusted/updater.exe"
+		cmdline = "updater.exe"
+		objectType = "file"
+		objectPath = fmt.Sprintf("C:/ProgramData/Vendor/cache/file-%05d.dat", index)
+	case 4:
+		category = "browser"
+		action = "visited"
+		image = ""
+		cmdline = ""
+		objectType = "url"
+		objectPath = fmt.Sprintf("https://intranet.example.test/page/%05d", index)
+	}
+	event := domain.TimelineEvent{
+		SchemaVersion:      "1",
+		ToolVersion:        "test",
+		ParserName:         "synthetic",
+		ParserVersion:      "test",
+		CaseID:             caseID,
+		HostID:             "host-synthetic",
+		SourceType:         "synthetic",
+		SourcePath:         fmt.Sprintf("synthetic-%s.jsonl", caseID),
+		SourceRecordID:     fmt.Sprintf("%08d", index),
+		RawRef:             domain.RawRef{Type: "synthetic_record", URI: fmt.Sprintf("synthetic-%s.jsonl", caseID), Offset: int64(index)},
+		TimestampNS:        time.Date(2024, 5, 6, 12, 0, 0, 0, time.UTC).Add(time.Duration(index) * time.Second).UnixNano(),
+		TimestampPrecision: domain.TimestampPrecisionNanosecond,
+		TimestampSource:    "synthetic",
+		Category:           category,
+		Action:             action,
+		Severity:           severity,
+		Confidence:         domain.ConfidenceMedium,
+		EvidenceStrength:   domain.EvidenceSingleSource,
+		Actor:              domain.Actor{User: fmt.Sprintf("ACME\\user-%03d", index%200), Image: image, Cmdline: cmdline, SessionID: fmt.Sprintf("%d", index%20)},
+		Object:             domain.Object{Type: objectType, Path: objectPath},
+		Tags:               []string{"synthetic", "benign"},
+	}
+	if category == "network" {
+		event.Network.DstIP = fmt.Sprintf("10.0.%d.%d", (index/255)%255, index%255)
+		event.Network.DstPort = 443
+	}
+	event.ID = domain.GenerateEventID(event)
+	return event
+}
+
+func syntheticPowerShellEvent(caseID string, index int) domain.TimelineEvent {
+	event := syntheticEvent(caseID, index, true)
+	event.Category = "process"
+	event.Action = "process_created"
+	event.Actor.Image = "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+	event.Actor.Cmdline = "powershell.exe -NoProfile -EncodedCommand SQBFAFgA"
+	event.Object = domain.Object{Type: "process", Path: event.Actor.Image}
+	event.Tags = []string{"synthetic", "powershell"}
+	event.ID = domain.GenerateEventID(event)
+	return event
+}
+
+func syntheticScheduledTaskEvent(caseID string, index int) domain.TimelineEvent {
+	event := syntheticEvent(caseID, index, true)
+	event.Category = "persistence"
+	event.Action = "scheduled_task_created"
+	event.Actor.Image = "C:/Windows/System32/schtasks.exe"
+	event.Actor.Cmdline = `schtasks /Create /TN CacheTask /TR C:\Users\Public\cache.exe`
+	event.Object = domain.Object{Type: "scheduled_task", Path: `C:\Users\Public\cache.exe`}
+	event.Tags = []string{"synthetic", "scheduled_task"}
+	event.ID = domain.GenerateEventID(event)
+	return event
 }
 
 func ingestFixtureDBForBenchmark(tb testing.TB) (string, *bytes.Buffer, *app.Service) {

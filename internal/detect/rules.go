@@ -119,6 +119,7 @@ func LoadDirectory(dir string) (RuleSet, error) {
 }
 
 func loadFile(path string) (RuleFile, error) {
+	// #nosec G304 -- rule files are discovered from a cleaned rules directory and restricted to YAML extensions.
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return RuleFile{}, fmt.Errorf("read rule file %s: %w", path, err)

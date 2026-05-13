@@ -667,13 +667,19 @@ func loadReportInput(ctx context.Context, db *sql.DB, baselineCaseID string, cas
 }
 
 func writeMarkdownReport(path string, input reportgen.Input) error {
+	// #nosec G304 -- report output path is a user-requested destination, opened with restrictive file permissions.
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
 	if err != nil {
 		return fmt.Errorf("open report output: %w", err)
 	}
-	defer file.Close()
 	if err := reportgen.RenderMarkdown(file, input); err != nil {
+		if closeErr := file.Close(); closeErr != nil {
+			return fmt.Errorf("render markdown report: %w; close report output: %v", err, closeErr)
+		}
 		return fmt.Errorf("render markdown report: %w", err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("close report output: %w", err)
 	}
 	return nil
 }

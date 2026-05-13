@@ -418,6 +418,7 @@ make lint
 make test
 make test-race
 make bench
+make security
 make build
 make demo
 make release-snapshot

@@ -27,6 +27,10 @@ jobs:
         run: make test-race
       - name: Build
         run: make build
+      - name: Benchmarks
+        run: make bench
+      - name: Release snapshot
+        run: make release-snapshot
 
   build:
     name: Build ${{ matrix.goos }} ${{ matrix.goarch }}
@@ -111,6 +115,12 @@ jobs:
         run: |
           cd dist
           cat *.sha256 > checksums.txt
+      - name: Generate SBOM
+        run: |
+          go run ./scripts/sbom > dist/sbom-go-modules.json
+          cd dist
+          sha256sum sbom-go-modules.json > sbom-go-modules.json.sha256
+          cat sbom-go-modules.json.sha256 >> checksums.txt
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -118,4 +128,5 @@ jobs:
             dist/*.tar.gz
             dist/*.zip
             dist/checksums.txt
+            dist/sbom-go-modules.json
           generate_release_notes: true

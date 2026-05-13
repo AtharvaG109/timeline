@@ -3,10 +3,10 @@
 ## Current Status
 
 ```text
-TECHNICAL PREVIEW
+RELEASE CANDIDATE
 ```
 
-`timeline` is portfolio-ready and v0.1.0 release-candidate ready. It is not production-ready for real incident response.
+`timeline` is portfolio-ready and v0.1.0 release-candidate ready after the local hardening gates listed below. It is not yet production-ready for real incident response because native parser validation, signed release artifacts, and broader corpus validation are still pending.
 
 Use this release-status wording:
 
@@ -70,7 +70,8 @@ Production-ready does not mean the tool supports every artifact type. It means t
 ### Gate 5: Scale and Performance
 
 - Demo case remains quick from a fresh clone.
-- 100k synthetic events remain usable for query, export, diff, and report generation.
+- 100k synthetic events remain usable for high-severity query coverage.
+- 10k baseline plus 10k incident synthetic corpus exercises query, JSONL export, diff, and report generation in tests.
 - 1M synthetic event ingest does not exhaust memory where practical.
 - `docs/performance.md` contains measured numbers.
 
@@ -79,15 +80,13 @@ Production-ready does not mean the tool supports every artifact type. It means t
 Required command set:
 
 ```sh
-go test ./...
-go test -race ./...
-go vet ./...
-staticcheck ./...
-gosec ./...
-govulncheck ./...
+make lint
+make test
+make test-race
+make security
 ```
 
-The optional tools are not vendored in this repo yet, so they are not part of the current local gate.
+`make security` runs pinned `staticcheck`, scoped `gosec`, and `govulncheck`. These tools require network access the first time they are downloaded.
 
 ### Gate 7: Release Engineering
 
@@ -97,6 +96,7 @@ The optional tools are not vendored in this repo yet, so they are not part of th
 - Tagged release workflow builds cross-platform archives.
 - Checksums are generated.
 - `make release-snapshot` builds local cross-platform archives, checksums, and a Go module SBOM under `/tmp/timeline-release` by default.
+- The GitHub release workflow generates release archives, `checksums.txt`, and `sbom-go-modules.json`.
 - Signed checksums or signed artifacts are still required before production-ready status.
 
 ### Gate 8: Documentation
@@ -140,6 +140,7 @@ make lint
 make test
 make test-race
 make bench
+make security
 make build
 make demo
 make release-snapshot
@@ -166,6 +167,6 @@ Then confirm:
 2. Prefetch and AmCache correctness.
 3. Large-corpus and false-positive testing.
 4. Performance and scale hardening.
-5. Release hardening with SBOM/signing.
+5. Release hardening with signed checksums or signed binaries.
 6. Compatibility and migration tests.
 7. Final production-readiness review in `docs/production-readiness-review.md`.
