@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest a timeline analysis improvement.
+title: "[feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What analyst workflow, artifact type, detection, diff, or report behavior would this improve?
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Scope boundaries
+      description: Explain how this stays read-only, deterministic, offline, and analyst-safe.
+    validations:
+      required: true

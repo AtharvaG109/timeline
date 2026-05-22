@@ -10,6 +10,8 @@ The project is a CLI tool. It does not run a web service and intentionally does 
 
 It demonstrates Windows artifact normalization, baseline-vs-incident diffing, rule-based detection, event correlation, and Markdown report generation. It should not yet be used as the sole tool for real incident response decisions.
 
+For release-focused validation, follow [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md). It covers local gates, forensic safety checks, release snapshots, and analyst-safe wording review.
+
 ## Quickstart
 
 Build the CLI:
